@@ -45,7 +45,6 @@ jobs:
           cd resource-server
           mvn -B clean verify
 
-      # -------- FRONTEND (ANGULAR + COVERAGE) --------
       - name: Install Node
         uses: actions/setup-node@v3
         with:
@@ -66,6 +65,5 @@ jobs:
           cd ag-prueba-front
           npm run lint -- --format json > eslint-report.json
 
-      # -------- SONARCLOUD SCAN --------
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master

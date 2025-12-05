@@ -1,0 +1,18 @@
+services:
+  resource-server:
+    build: ./resource-server
+    container_name: resource-server
+    network_mode: host
+  
+  authorization-server:
+    build: ./authorization-server
+    container_name: authorization-server
+    network_mode: host
+      
+  ag-prueba-front:
+    build: ./ag-prueba-front
+    container_name: ag-prueba-front
+    depends_on:
+      - authorization-server
+      - resource-server
+    network_mode: host

@@ -37,9 +37,11 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Install Docker-Compose
+        uses: docker/compose-action@v2
+
       - name: Execute All Services
-        run: |
-          make
+        run: docker compose up -d
           
       - name: Build and test Authorization Server
         run: | 

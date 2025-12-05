@@ -44,6 +44,11 @@ jobs:
           cd ag-prueba-front
           npm run test -- --watch=false --code-coverage
 
+      - name: ESLint
+        run: | 
+          cd ag-prueba-front
+          npm run lint -- --format json > eslint-report.json
+
       # -------- SONARCLOUD SCAN --------
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master

@@ -24,6 +24,8 @@ jobs:
           --health-timeout=5s
           --health-retries=5
 
+      
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,6 +37,10 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Execute All Services
+        run: |
+          make
+          
       - name: Build and test Authorization Server
         run: | 
           cd authorization-server 

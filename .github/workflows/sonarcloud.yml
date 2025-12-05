@@ -1,0 +1,49 @@
+name: SonarCloud Analysis
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Build and test Authorization Server
+        run: | 
+          cd authorization-server 
+          mvn -B clean verify
+
+      - name: Build and test Resource Server
+        run: | 
+          cd resource-server
+          mvn -B clean verify
+
+      # -------- FRONTEND (ANGULAR + COVERAGE) --------
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Angular dependencies
+        run: |
+          cd ag-prueba-front
+          npm install
+
+      - name: Test Angular with coverage
+        run: |
+          cd ag-prueba-front
+          npm run test -- --watch=false --code-coverage
+
+      # -------- SONARCLOUD SCAN --------
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master

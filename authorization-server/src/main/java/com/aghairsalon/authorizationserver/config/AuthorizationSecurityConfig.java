@@ -59,7 +59,12 @@ public class AuthorizationSecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain authSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults());
+        http.headers(headers -> headers
+            .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self' https://fonts.gstatic.com;"))
+            .frameOptions(frame -> frame.deny())
+            .xssProtection(Customizer.withDefaults())
+            .permissionsPolicy(permissions -> permissions.policy("geolocation=(), microphone=()"))
+        ).cors(Customizer.withDefaults());
         http.csrf(csrf -> csrf.ignoringRequestMatchers("/auth/**", "/client/**"));
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)

@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timestamps() // Para medir tiempo t en cada paso
+    }
+    environment {
+        DEPLOY_START_TIME = ""
+    }
+    stages {
+        stage('Initialize') {
+            steps {
+                script { env.DEPLOY_START_TIME = System.currentTimeMillis() }
+            }
+        }
+        stage('Build Services') {
+            parallel {
+                stage('Auth Server') {
+                    steps { sh 'cd authorization-server && ./mvnw clean package -DskipTests' }
+                }
+                stage('Resource Server') {
+                    steps { sh 'cd resource-server && ./mvnw clean package -DskipTests' }
+                }
+                stage('Angular Front') {
+                    steps { sh 'cd ag-prueba-front && npm install && npm run build' }
+                }
+            }
+        }
+        stage('CD - Deployment') {
+            steps {
+                // KR: Automatización del despliegue usando el docker-compose existente
+                sh 'docker-compose up -d --build'
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                def endTime = System.currentTimeMillis()
+                def durationSeconds = (endTime - Long.parseLong(env.DEPLOY_START_TIME)) / 1000
+                echo "MEDICIÓN KR: Tiempo de despliegue t = ${durationSeconds} segundos"
+            }
+        }
+        success {
+        slackSend(channel: '#deploy-alerts', message: "Despliegue exitoso. PR listo para review final.")
+        }
+    }
+}

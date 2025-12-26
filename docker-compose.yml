@@ -1,18 +1,22 @@
 services:
   resource-server:
     build: ./resource-server
-    container_name: resource-server
+    environment:
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - ISSUER_URI=${ISSUER_URI}
     network_mode: host
   
   authorization-server:
     build: ./authorization-server
-    container_name: authorization-server
+    environment:
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - DB_PASSWORD=${DB_PASSWORD}
     network_mode: host
-      
+
   ag-prueba-front:
-    build: ./ag-prueba-front
-    container_name: ag-prueba-front
-    depends_on:
-      - authorization-server
-      - resource-server
+    build: 
+      context: ./ag-prueba-front
+      args:
+        - API_URL=${RESOURCE_URL}
     network_mode: host

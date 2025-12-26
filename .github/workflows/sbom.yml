@@ -1,0 +1,29 @@
+name: SBOM Upload
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  upload_sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Generate Authorization Server SBOM
+        run: cd authorization-server && mvnw verify
+
+      - name: Generate Resource Server SBOM
+        run: cd resource-server && mvnw verify
+
+      - name: Generate Frontend SBOM
+        run: cd ag-prueba-front && npx cyclonedx-bom -o bom-angular.json
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: sbom-files
+          path: |
+            target/bom.json
+            bom-angular.json

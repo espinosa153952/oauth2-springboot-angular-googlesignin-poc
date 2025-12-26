@@ -19,10 +19,20 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.router.events.pipe(
-      filter((event: RouterEvent): event is NavigationEnd => event instanceof NavigationEnd)
+      filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
       this.menu?.getLogged();
+      
+      // Medición KR: r% (Page Load Time)
+      setTimeout(() => {
+        const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+        if (nav) {
+          const loadTime = nav.loadEventEnd - nav.startTime;
+          console.log(`Métrica KR (r%): Carga de página en ${loadTime.toFixed(2)}ms`);
+        }
+      }, 0);
     });
   }
-  
 }
+
+
